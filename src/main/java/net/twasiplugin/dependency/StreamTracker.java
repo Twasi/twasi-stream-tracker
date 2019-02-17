@@ -4,6 +4,8 @@ import net.twasi.core.database.models.TwitchAccount;
 import net.twasi.core.database.models.User;
 import net.twasi.core.interfaces.api.TwasiInterface;
 import net.twasi.core.logger.TwasiLogger;
+import net.twasi.core.services.ServiceRegistry;
+import net.twasi.core.services.providers.DataService;
 import net.twasi.twitchapi.helix.streams.response.StreamDTO;
 import net.twasi.twitchapi.options.TwitchRequestOptions;
 import net.twasiplugin.dependency.database.StreamEntity;
@@ -27,8 +29,10 @@ public class StreamTracker extends Thread {
     private TwitchAccount twitchAccount;
 
     // Repositories
-    private StreamRepository streamRepo;
-    private StreamTrackRepository streamTrackRepo;
+    private static StreamRepository streamRepo = ServiceRegistry
+            .get(DataService.class).get(StreamRepository.class);
+    private static StreamTrackRepository streamTrackRepo = ServiceRegistry
+            .get(DataService.class).get(StreamTrackRepository.class);
 
     public StreamTracker(TwasiInterface twasiInterface) {
         this.setDaemon(true);
