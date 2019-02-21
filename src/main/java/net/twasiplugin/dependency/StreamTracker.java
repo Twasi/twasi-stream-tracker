@@ -12,11 +12,14 @@ import net.twasiplugin.dependency.database.StreamEntity;
 import net.twasiplugin.dependency.database.StreamRepository;
 import net.twasiplugin.dependency.database.StreamTrackEntity;
 import net.twasiplugin.dependency.database.StreamTrackRepository;
+import net.twasiplugin.dependency.events.StreamStartEvent;
+import net.twasiplugin.dependency.events.StreamTrackEvent;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static net.twasi.twitchapi.TwitchAPI.helix;
+import static net.twasiplugin.dependency.StreamTrackerDependency.service;
 
 public class StreamTracker extends Thread {
 
@@ -27,6 +30,9 @@ public class StreamTracker extends Thread {
     private TwasiInterface twasiInterface;
     private User user;
     private TwitchAccount twitchAccount;
+
+    // State watcher
+    private boolean online = false;
 
     // Repositories
     private static StreamRepository streamRepo = ServiceRegistry
@@ -41,11 +47,12 @@ public class StreamTracker extends Thread {
         this.twitchAccount = user.getTwitchAccount();
     }
 
+    // Track every minute
     @Override
     public void run() {
         while (continueTracking) {
             try {
-                track();
+                new Thread(this::track).start(); // Track in another thread to not get out of sync
                 TimeUnit.MINUTES.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -53,23 +60,31 @@ public class StreamTracker extends Thread {
         }
     }
 
+    // If tracker should be stopped just let the thread loop run out
     public void stopTracking() {
         continueTracking = false;
     }
 
+    // Look up for online status and emit events
     private void track() {
         String result = "[Tracker] User " + twitchAccount.getDisplayName() + " ";
         List<StreamDTO> dtoList = helix().streams().getStreamsByUser(twitchAccount.getTwitchId(), 1, new TwitchRequestOptions().withAuth(twitchAccount.toAuthContext())).getData();
         if (dtoList.size() > 0) {
-            processDTO(dtoList.get(0));
+            StreamTrackEntity entity = processDTO(dtoList.get(0));
+            service.emitEvent(this.user, new StreamTrackEvent(this.user, entity));
+            if (!online) service.emitEvent(this.user, new StreamStartEvent(this.user, entity));
             result += "tracked.";
+            online = true;
         } else {
+            service.emitEvent(this.user, new StreamTrackEvent(this.user, null));
             result += "is offline. Skipped tracking.";
+            online = false;
         }
         TwasiLogger.log.debug(result);
     }
 
-    private void processDTO(StreamDTO dto) {
+    // Create stream-association for entity and commit to database
+    private StreamTrackEntity processDTO(StreamDTO dto) {
         StreamEntity stream = streamRepo.getStreamEntityByStreamId(dto.getId());
         if (stream == null) {
             TwasiLogger.log.debug("[Tracker] Tracking new stream of user " + twitchAccount.getDisplayName() + ".");
@@ -80,7 +95,7 @@ public class StreamTracker extends Thread {
         StreamTrackEntity entity = new StreamTrackEntity(stream, dto.getGameId(), dto.getTitle(), dto.getViewerCount());
         streamTrackRepo.add(entity);
         streamTrackRepo.commitAll();
-
+        return entity;
     }
 
 }

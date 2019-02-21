@@ -12,9 +12,12 @@ import java.util.HashMap;
 public class StreamTrackerDependency extends TwasiDependency {
 
     private HashMap<String, StreamTracker> registeredTrackers;
+    static StreamTrackerService service = new StreamTrackerService();
 
     @Override
     public void onActivate() {
+        ServiceRegistry.register(service);
+
         registeredTrackers = new HashMap<>();
         InstanceManagerService instanceManager = ServiceRegistry.get(InstanceManagerService.class);
         instanceManager.registerNewInstanceHandler(new TwasiEventHandler<NewInstanceEvent>() {
