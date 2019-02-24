@@ -1,8 +1,8 @@
-package net.twasiplugin.dependency.events;
+package net.twasiplugin.dependency.streamtracker.events;
 
 import net.twasi.core.database.models.User;
 import net.twasi.core.events.TwasiEvent;
-import net.twasiplugin.dependency.database.StreamTrackEntity;
+import net.twasiplugin.dependency.streamtracker.database.StreamTrackEntity;
 
 public class StreamTrackEvent extends TwasiEvent {
 

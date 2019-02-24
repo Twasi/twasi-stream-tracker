@@ -1,11 +1,11 @@
-package net.twasiplugin.dependency;
+package net.twasiplugin.dependency.streamtracker;
 
 import net.twasi.core.database.models.User;
 import net.twasi.core.events.TwasiEvent;
 import net.twasi.core.events.TwasiEventHandler;
 import net.twasi.core.services.IService;
-import net.twasiplugin.dependency.events.StreamStartEvent;
-import net.twasiplugin.dependency.events.StreamTrackEvent;
+import net.twasiplugin.dependency.streamtracker.events.StreamStartEvent;
+import net.twasiplugin.dependency.streamtracker.events.StreamTrackEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;

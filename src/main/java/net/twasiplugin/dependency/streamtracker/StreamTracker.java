@@ -1,4 +1,4 @@
-package net.twasiplugin.dependency;
+package net.twasiplugin.dependency.streamtracker;
 
 import net.twasi.core.database.models.TwitchAccount;
 import net.twasi.core.database.models.User;
@@ -8,18 +8,18 @@ import net.twasi.core.services.ServiceRegistry;
 import net.twasi.core.services.providers.DataService;
 import net.twasi.twitchapi.helix.streams.response.StreamDTO;
 import net.twasi.twitchapi.options.TwitchRequestOptions;
-import net.twasiplugin.dependency.database.StreamEntity;
-import net.twasiplugin.dependency.database.StreamRepository;
-import net.twasiplugin.dependency.database.StreamTrackEntity;
-import net.twasiplugin.dependency.database.StreamTrackRepository;
-import net.twasiplugin.dependency.events.StreamStartEvent;
-import net.twasiplugin.dependency.events.StreamTrackEvent;
+import net.twasiplugin.dependency.streamtracker.database.StreamEntity;
+import net.twasiplugin.dependency.streamtracker.database.StreamRepository;
+import net.twasiplugin.dependency.streamtracker.database.StreamTrackEntity;
+import net.twasiplugin.dependency.streamtracker.database.StreamTrackRepository;
+import net.twasiplugin.dependency.streamtracker.events.StreamStartEvent;
+import net.twasiplugin.dependency.streamtracker.events.StreamTrackEvent;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static net.twasi.twitchapi.TwitchAPI.helix;
-import static net.twasiplugin.dependency.StreamTrackerDependency.service;
+import static net.twasiplugin.dependency.streamtracker.StreamTrackerDependency.service;
 
 public class StreamTracker extends Thread {
 

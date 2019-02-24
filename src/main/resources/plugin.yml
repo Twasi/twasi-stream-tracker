@@ -1,5 +1,5 @@
 name: StreamTracker
-main: net.twasiplugin.dependency.StreamTrackerDependency
+main: net.twasiplugin.dependency.streamtracker.StreamTrackerDependency
 author: Twasi Team
 description: Track stream data of all users
 version: 1.0
@@ -9,25 +9,25 @@ dependency: true
 commands:
 
 api: |
-  type: StreamTracker {
+  type StreamTracker {
     lastStream: Stream,
-    streamsByRange(start: Number, end: Number): [Stream],
-    lastStreamOffset(offset: Number): Stream
+    streamsByRange(start: String, end: String): [Stream],
+    lastStreamWithOffset(offset: Int): Stream
   }
 
-  type: Stream {
+  type Stream {
     streamId: String,
     language: String,
-    startedAt: Number,
+    startedAt: String,
     streamType: String,
     communityIds: [String],
     tagIds: [String],
     data: [StreamTrackEntity]
   }
 
-  type: StreamTrackEntity {
+  type StreamTrackEntity {
     gameId: String,
     title: String,
-    viewerCount: Number,
-    timestamp: Number
+    viewerCount: Int,
+    timestamp: String
   }

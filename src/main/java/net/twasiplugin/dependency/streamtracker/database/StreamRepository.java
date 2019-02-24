@@ -1,4 +1,4 @@
-package net.twasiplugin.dependency.database;
+package net.twasiplugin.dependency.streamtracker.database;
 
 import net.twasi.core.database.lib.Repository;
 import net.twasi.core.database.models.User;
