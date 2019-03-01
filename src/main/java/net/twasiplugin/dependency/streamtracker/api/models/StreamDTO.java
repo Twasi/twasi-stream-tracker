@@ -42,7 +42,7 @@ public class StreamDTO {
     }
 
     public List<StreamTrackDTO> getData() {
-        return repo.getStreamEntitiesByStream(entity)
+        return repo.getStreamEntitiesByStream(entity, true)
                 .stream()
                 .map(StreamTrackDTO::new)
                 .collect(Collectors.toList());

@@ -13,6 +13,7 @@ import net.twasiplugin.dependency.streamtracker.database.StreamRepository;
 import net.twasiplugin.dependency.streamtracker.database.StreamTrackEntity;
 import net.twasiplugin.dependency.streamtracker.database.StreamTrackRepository;
 import net.twasiplugin.dependency.streamtracker.events.StreamStartEvent;
+import net.twasiplugin.dependency.streamtracker.events.StreamStopEvent;
 import net.twasiplugin.dependency.streamtracker.events.StreamTrackEvent;
 
 import java.util.List;
@@ -78,6 +79,7 @@ public class StreamTracker extends Thread {
         } else {
             service.emitEvent(this.user, new StreamTrackEvent(this.user, null));
             result += "is offline. Skipped tracking.";
+            if (online) service.emitEvent(this.user, new StreamStopEvent(this.user));
             online = false;
         }
         TwasiLogger.log.debug(result);

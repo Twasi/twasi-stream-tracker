@@ -5,6 +5,7 @@ import net.twasi.core.events.TwasiEvent;
 import net.twasi.core.events.TwasiEventHandler;
 import net.twasi.core.services.IService;
 import net.twasiplugin.dependency.streamtracker.events.StreamStartEvent;
+import net.twasiplugin.dependency.streamtracker.events.StreamStopEvent;
 import net.twasiplugin.dependency.streamtracker.events.StreamTrackEvent;
 
 import java.util.ArrayList;
@@ -16,17 +17,20 @@ public class StreamTrackerService implements IService {
 
     void emitEvent(User user, TwasiEvent event) {
         RegisteredStreamEventHandlers handlers = registeredHandlers.get(user.getId().toString());
-        if (handlers == null) return;
+        if (handlers == null) return; // Return if no handler is registered
         if (event instanceof StreamTrackEvent) {
-            StreamTrackEvent streamTrackEvent = (StreamTrackEvent) event;
-            for (TwasiStreamTrackEventHandler handler : handlers.getTrackEventHandlers())
-                if (streamTrackEvent.getCurrentTrackEntity() != null || handler.getEventsWhenOffline)
-                    new Thread(() -> handler.on(streamTrackEvent)).start();
+            StreamTrackEvent streamTrackEvent = (StreamTrackEvent) event; // Cast TwasiEvent to specific event
+            for (TwasiStreamTrackEventHandler handler : handlers.getTrackEventHandlers()) // Loop through registered handlers
+                if (streamTrackEvent.getCurrentTrackEntity() != null || handler.getEventsWhenOffline) // Online trigger handler when streamer is online or handler requests offline events
+                    new Thread(() -> handler.on(streamTrackEvent)).start(); // Trigger handler in new Thread
         }
         if (event instanceof StreamStartEvent) {
-            StreamStartEvent streamTrackEvent = (StreamStartEvent) event;
-            for (TwasiEventHandler<StreamStartEvent> handler : handlers.getStartEventHandlers())
-                new Thread(() -> handler.on((StreamStartEvent) event)).start();
+            for (TwasiEventHandler<StreamStartEvent> handler : handlers.getStartEventHandlers()) // Loop through registered handlers
+                new Thread(() -> handler.on((StreamStartEvent) event)).start(); // Trigger handler in new Thread
+        }
+        if (event instanceof StreamStopEvent) {
+            for (TwasiEventHandler<StreamStopEvent> handler : handlers.getStopEventHandlers()) // Loop through registered handlers
+                new Thread(() -> handler.on((StreamStopEvent) event)).start(); // Trigger handler in new Thread
         }
     }
 
@@ -42,9 +46,16 @@ public class StreamTrackerService implements IService {
         registeredHandlers.put(user.getId().toString(), handlers.registerTrackEventHandler(handler));
     }
 
+    public void registerStreamStopEvent(User user, TwasiEventHandler<StreamStopEvent> handler) {
+        RegisteredStreamEventHandlers handlers = registeredHandlers.get(user.getId().toString());
+        if (handlers == null) handlers = new RegisteredStreamEventHandlers();
+        registeredHandlers.put(user.getId().toString(), handlers.registerStopEventHander(handler));
+    }
+
     private class RegisteredStreamEventHandlers {
         private List<TwasiEventHandler<StreamStartEvent>> startEventHandlers = new ArrayList<>();
         private List<TwasiStreamTrackEventHandler> trackEventHandlers = new ArrayList<>();
+        private List<TwasiEventHandler<StreamStopEvent>> stopEventHandlers = new ArrayList<>();
 
         public RegisteredStreamEventHandlers registerStartEventHandler(TwasiEventHandler<StreamStartEvent> handler) {
             this.startEventHandlers.add(handler);
@@ -56,12 +67,21 @@ public class StreamTrackerService implements IService {
             return this;
         }
 
-        public List<TwasiEventHandler<StreamStartEvent>> getStartEventHandlers() {
+        public RegisteredStreamEventHandlers registerStopEventHander(TwasiEventHandler<StreamStopEvent> handler) {
+            this.stopEventHandlers.add(handler);
+            return this;
+        }
+
+        List<TwasiEventHandler<StreamStartEvent>> getStartEventHandlers() {
             return startEventHandlers;
         }
 
-        public List<TwasiStreamTrackEventHandler> getTrackEventHandlers() {
+        List<TwasiStreamTrackEventHandler> getTrackEventHandlers() {
             return trackEventHandlers;
+        }
+
+        List<TwasiEventHandler<StreamStopEvent>> getStopEventHandlers() {
+            return stopEventHandlers;
         }
     }
 
@@ -69,26 +89,3 @@ public class StreamTrackerService implements IService {
         public boolean getEventsWhenOffline = false; // Can be set to true to get events when offline (entities will be null)
     }
 }
-
-
-/*
-        private class RegisteredStreamEventHandlers {
-            private List<TwasiEventHandler<? extends TwasiEvent>> list = new ArrayList<>();
-
-            public void put(TwasiEventHandler<? extends TwasiEvent> handler) {
-                list.add(handler);
-            }
-
-            public <T extends TwasiEvent> List<TwasiEventHandler<T>> getEventHandlersOfType(Class<T> clazz) {
-                List<TwasiEventHandler<T>> found = new ArrayList<>();
-                for (TwasiEventHandler<? extends TwasiEvent> handler : list)
-                    if (handler.getClass().getTypeName().equalsIgnoreCase(clazz.getTypeName()))
-                        found.add((TwasiEventHandler<T>) handler);
-                return found;
-            }
-
-            public List<TwasiEventHandler> getEventHandlers() {
-                return list;
-            }
-        }
-    */
