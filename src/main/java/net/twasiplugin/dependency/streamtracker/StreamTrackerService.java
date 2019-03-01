@@ -85,7 +85,7 @@ public class StreamTrackerService implements IService {
         }
     }
 
-    public abstract class TwasiStreamTrackEventHandler extends TwasiEventHandler<StreamTrackEvent> {
+    public static abstract class TwasiStreamTrackEventHandler extends TwasiEventHandler<StreamTrackEvent> {
         public boolean getEventsWhenOffline = false; // Can be set to true to get events when offline (entities will be null)
     }
 }
