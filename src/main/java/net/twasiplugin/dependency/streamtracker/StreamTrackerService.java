@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static net.twasiplugin.dependency.streamtracker.StreamTrackerDependency.registeredTrackers;
+
 public class StreamTrackerService implements IService {
     private HashMap<String, RegisteredStreamEventHandlers> registeredHandlers = new HashMap<>();
 
@@ -49,7 +51,7 @@ public class StreamTrackerService implements IService {
     public void registerStreamStopEvent(User user, TwasiEventHandler<StreamStopEvent> handler) {
         RegisteredStreamEventHandlers handlers = registeredHandlers.get(user.getId().toString());
         if (handlers == null) handlers = new RegisteredStreamEventHandlers();
-        registeredHandlers.put(user.getId().toString(), handlers.registerStopEventHander(handler));
+        registeredHandlers.put(user.getId().toString(), handlers.registerStopEventHandler(handler));
     }
 
     private class RegisteredStreamEventHandlers {
@@ -67,7 +69,7 @@ public class StreamTrackerService implements IService {
             return this;
         }
 
-        public RegisteredStreamEventHandlers registerStopEventHander(TwasiEventHandler<StreamStopEvent> handler) {
+        public RegisteredStreamEventHandlers registerStopEventHandler(TwasiEventHandler<StreamStopEvent> handler) {
             this.stopEventHandlers.add(handler);
             return this;
         }
@@ -87,5 +89,12 @@ public class StreamTrackerService implements IService {
 
     public static abstract class TwasiStreamTrackEventHandler extends TwasiEventHandler<StreamTrackEvent> {
         public boolean getEventsWhenOffline = false; // Can be set to true to get events when offline (entities will be null)
+    }
+
+    public StreamTracker getTrackerByTwitchId(String twitchId) throws RuntimeException {
+        StreamTracker streamTracker = registeredTrackers.get(twitchId);
+        if (streamTracker == null || !streamTracker.isTracking())
+            throw new RuntimeException("No Tracker available for that Twitch ID");
+        return streamTracker;
     }
 }

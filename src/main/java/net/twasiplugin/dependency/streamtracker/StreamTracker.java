@@ -100,4 +100,11 @@ public class StreamTracker extends Thread {
         return entity;
     }
 
+    public boolean isTracking() {
+        return continueTracking;
+    }
+
+    public boolean isOnline() {
+        return online;
+    }
 }

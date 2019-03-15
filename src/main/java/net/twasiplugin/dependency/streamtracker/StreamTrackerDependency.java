@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 public class StreamTrackerDependency extends TwasiDependency {
 
-    private HashMap<String, StreamTracker> registeredTrackers;
+    static HashMap<String, StreamTracker> registeredTrackers;
     static StreamTrackerService service = new StreamTrackerService();
 
     @Override

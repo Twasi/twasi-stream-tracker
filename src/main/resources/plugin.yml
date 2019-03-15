@@ -1,4 +1,4 @@
-name: StreamTracker
+name: "StreamTracker"
 main: net.twasiplugin.dependency.streamtracker.StreamTrackerDependency
 author: Twasi Team
 description: Track stream data of all users
