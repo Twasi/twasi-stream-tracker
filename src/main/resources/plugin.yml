@@ -12,7 +12,8 @@ api: |
   type StreamTracker {
     lastStream: Stream,
     streamsByRange(start: String, end: String): [Stream],
-    lastStreamWithOffset(offset: Int): Stream
+    lastStreamWithOffset(offset: Int): Stream,
+    allStreamData: [StreamTrackEntity]
   }
 
   type Stream {
@@ -27,6 +28,7 @@ api: |
 
   type StreamTrackEntity {
     gameId: String,
+    game: String,
     title: String,
     viewerCount: Int,
     timestamp: String

@@ -5,9 +5,15 @@ import net.twasiplugin.dependency.streamtracker.database.StreamTrackEntity;
 public class StreamTrackDTO {
 
     private StreamTrackEntity entity;
+    private String game = "";
 
     public StreamTrackDTO(StreamTrackEntity entity) {
         this.entity = entity;
+    }
+
+    public StreamTrackDTO(StreamTrackEntity entity, String game) {
+        this.entity = entity;
+        this.game = game;
     }
 
     public String getGameId() {
@@ -24,5 +30,9 @@ public class StreamTrackDTO {
 
     public String getTimestamp() {
         return entity.getTimestamp().toString();
+    }
+
+    public String getGame() {
+        return game;
     }
 }

@@ -3,6 +3,8 @@ package net.twasiplugin.dependency.streamtracker.database;
 import net.twasi.core.database.lib.Repository;
 import net.twasi.core.database.models.User;
 
+import java.util.List;
+
 public class StreamRepository extends Repository<StreamEntity> {
 
     /**
@@ -17,12 +19,16 @@ public class StreamRepository extends Repository<StreamEntity> {
         }
     }
 
-    public StreamEntity getLatestStreamEntityOfUser(User user){
+    public StreamEntity getLatestStreamEntityOfUser(User user) {
         try {
             return store.createQuery(StreamEntity.class).field("user").equal(user).order("-startedAt").get();
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public List<StreamEntity> getAllByUser(User user) {
+        return store.createQuery(StreamEntity.class).field("user").equal(user).asList();
     }
 
 }
