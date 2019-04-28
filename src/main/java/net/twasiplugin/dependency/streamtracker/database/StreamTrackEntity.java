@@ -26,6 +26,14 @@ public class StreamTrackEntity extends BaseEntity {
         this.timestamp = Calendar.getInstance().getTime();
     }
 
+    public StreamTrackEntity(StreamEntity stream, String gameId, String title, int viewerCount, Date timestamp) {
+        this.stream = stream;
+        this.gameId = gameId;
+        this.title = title;
+        this.viewerCount = viewerCount;
+        this.timestamp = timestamp;
+    }
+
     public StreamTrackEntity() {
     }
 

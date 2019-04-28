@@ -35,4 +35,8 @@ public class StreamTrackDTO {
     public String getGame() {
         return game;
     }
+
+    public StreamTrackEntity getEntity() {
+        return entity;
+    }
 }
