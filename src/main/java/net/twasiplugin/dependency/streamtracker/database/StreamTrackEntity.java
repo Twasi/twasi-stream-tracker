@@ -1,11 +1,13 @@
 package net.twasiplugin.dependency.streamtracker.database;
 
 import net.twasi.core.database.models.BaseEntity;
+import net.twasiplugin.dependency.streamtracker.StreamTracker;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 @Entity(value = "stream-track-entities", noClassnameStored = true)
 public class StreamTrackEntity extends BaseEntity {
@@ -16,25 +18,25 @@ public class StreamTrackEntity extends BaseEntity {
     private String gameId;
     private String title;
     private int viewerCount;
+    private List<StreamTracker.UserMessagesAndCommands> userMessages;
     private Date timestamp;
 
-    public StreamTrackEntity(StreamEntity stream, String gameId, String title, int viewerCount) {
+    public StreamTrackEntity(StreamEntity stream, String gameId, String title, int viewerCount, List<StreamTracker.UserMessagesAndCommands> userMessages) {
         this.stream = stream;
         this.gameId = gameId;
         this.title = title;
         this.viewerCount = viewerCount;
+        this.userMessages = userMessages;
         this.timestamp = Calendar.getInstance().getTime();
     }
 
-    public StreamTrackEntity(StreamEntity stream, String gameId, String title, int viewerCount, Date timestamp) {
+    public StreamTrackEntity(StreamEntity stream, String gameId, String title, int viewerCount, Date timestamp, List<StreamTracker.UserMessagesAndCommands> userMessages) {
         this.stream = stream;
         this.gameId = gameId;
         this.title = title;
         this.viewerCount = viewerCount;
         this.timestamp = timestamp;
-    }
-
-    public StreamTrackEntity() {
+        this.userMessages = userMessages;
     }
 
     public StreamEntity getStream() {
@@ -55,5 +57,9 @@ public class StreamTrackEntity extends BaseEntity {
 
     public Date getTimestamp() {
         return timestamp;
+    }
+
+    public List<StreamTracker.UserMessagesAndCommands> getUserMessages() {
+        return userMessages;
     }
 }

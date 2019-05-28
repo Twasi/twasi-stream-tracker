@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static net.twasiplugin.dependency.streamtracker.StreamTrackerDependency.getGameIdsAndNames;
+import static net.twasiplugin.dependency.streamtracker.StreamTrackerPlugin.getGameIdsAndNames;
 import static net.twasiplugin.dependency.streamtracker.database.StreamTrackRepository.autoSumUp;
 
 public class StreamDTO {

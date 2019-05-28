@@ -1,6 +1,7 @@
 package net.twasiplugin.dependency.streamtracker.database;
 
 import net.twasi.core.database.lib.Repository;
+import net.twasiplugin.dependency.streamtracker.StreamTracker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ public class StreamTrackRepository extends Repository<StreamTrackEntity> {
         }
     }
 
-    public List<StreamTrackEntity> getStreamEntitiesByStream(StreamEntity stream, boolean b){
+    public List<StreamTrackEntity> getStreamEntitiesByStream(StreamEntity stream, boolean b) {
         return getStreamEntitiesByStream(stream);
     }
 
@@ -33,14 +34,24 @@ public class StreamTrackRepository extends Repository<StreamTrackEntity> {
                         continue;
                     }
                     int viewer = (tmp.getViewerCount() + entity.getViewerCount()) / 2;
-                    entities.add(new StreamTrackEntity(tmp.getStream(), tmp.getGameId(), tmp.getTitle(), viewer, tmp.getTimestamp()));
+                    List<StreamTracker.UserMessagesAndCommands> userMessages = new ArrayList<>(tmp.getUserMessages());
+                    entity.getUserMessages().forEach(e -> {
+                        StreamTracker.UserMessagesAndCommands msgs = userMessages.stream().filter(e1 -> e1.twitchId.equals(e.twitchId)).findFirst().orElse(null);
+                        if(msgs != null) {
+                            msgs.messages += e.messages;
+                            msgs.commands += e.commands;
+                        } else {
+                            userMessages.add(e);
+                        }
+                    });
+                    entities.add(new StreamTrackEntity(tmp.getStream(), tmp.getGameId(), tmp.getTitle(), viewer, tmp.getTimestamp(), userMessages));
                 }
                 list = entities;
                 entities = new ArrayList<>();
                 counter = 0;
             }
             return list;
-        } catch (Throwable t){
+        } catch (Throwable t) {
             t.printStackTrace();
         }
         return new ArrayList<>();

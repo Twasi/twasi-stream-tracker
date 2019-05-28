@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static net.twasiplugin.dependency.streamtracker.StreamTrackerDependency.registeredTrackers;
+import static net.twasiplugin.dependency.streamtracker.StreamTrackerPlugin.registeredTrackers;
 
 public class StreamTrackerService implements IService {
     private HashMap<String, RegisteredStreamEventHandlers> registeredHandlers = new HashMap<>();

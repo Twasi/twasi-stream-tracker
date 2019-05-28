@@ -20,6 +20,8 @@ public class StreamEntity extends BaseEntity {
     private String streamType;
     private List<String> communityIds;
     private List<String> tagIds;
+    private int newFollowers = 0;
+    private int newViews = 0;
 
 
     public StreamEntity(User user, String streamId, String language, Date startedAt, String streamType, List<String> communityIds, List<String> tagIds) {
@@ -61,5 +63,21 @@ public class StreamEntity extends BaseEntity {
 
     public List<String> getTagIds() {
         return tagIds;
+    }
+
+    public int getNewFollowers() {
+        return newFollowers;
+    }
+
+    public void setNewFollowers(int newFollowers) {
+        this.newFollowers = newFollowers;
+    }
+
+    public int getNewViews() {
+        return newViews;
+    }
+
+    public void setNewViews(int newViews) {
+        this.newViews = newViews;
     }
 }

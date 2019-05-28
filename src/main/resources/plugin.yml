@@ -1,12 +1,10 @@
 name: "StreamTracker"
-main: net.twasiplugin.dependency.streamtracker.StreamTrackerDependency
+main: net.twasiplugin.dependency.streamtracker.StreamTrackerPlugin
 author: Twasi Team
 description: Track stream data of all users
 version: 1.0
-
-dependency: true
-
-commands:
+hidden: true
+autoInstall: true
 
 api: |
   type StreamTracker {
@@ -31,5 +29,7 @@ api: |
     game: String,
     title: String,
     viewerCount: Int,
+    chatMessages: Int,
+    chatCommands: Int,
     timestamp: String
   }
