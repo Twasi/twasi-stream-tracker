@@ -1,5 +1,6 @@
 package net.twasiplugin.dependency.streamtracker.api.models;
 
+import net.twasi.core.logger.TwasiLogger;
 import net.twasiplugin.dependency.streamtracker.database.StreamTrackEntity;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,15 +40,25 @@ public class StreamTrackDTO {
     }
 
     public int getChatMessages() {
-        AtomicInteger total = new AtomicInteger();
-        this.entity.getUserMessages().forEach(e -> total.addAndGet(e.messages));
-        return total.get();
+        try {
+            AtomicInteger total = new AtomicInteger();
+            this.entity.getUserMessages().forEach(e -> total.addAndGet(e.messages));
+            return total.get();
+        } catch (Exception e) {
+            TwasiLogger.log.debug(e);
+            return 0;
+        }
     }
 
     public int getChatCommands() {
-        AtomicInteger total = new AtomicInteger();
-        this.entity.getUserMessages().forEach(e -> total.addAndGet(e.commands));
-        return total.get();
+        try {
+            AtomicInteger total = new AtomicInteger();
+            this.entity.getUserMessages().forEach(e -> total.addAndGet(e.commands));
+            return total.get();
+        } catch (Exception e) {
+            TwasiLogger.log.debug(e);
+            return 0;
+        }
     }
 
     public StreamTrackEntity getEntity() {

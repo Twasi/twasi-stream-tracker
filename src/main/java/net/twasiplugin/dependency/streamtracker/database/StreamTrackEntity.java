@@ -21,6 +21,9 @@ public class StreamTrackEntity extends BaseEntity {
     private List<StreamTracker.UserMessagesAndCommands> userMessages;
     private Date timestamp;
 
+    public StreamTrackEntity() {
+    }
+
     public StreamTrackEntity(StreamEntity stream, String gameId, String title, int viewerCount, List<StreamTracker.UserMessagesAndCommands> userMessages) {
         this.stream = stream;
         this.gameId = gameId;

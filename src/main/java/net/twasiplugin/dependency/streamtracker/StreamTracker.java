@@ -18,6 +18,7 @@ import net.twasiplugin.dependency.streamtracker.database.StreamTrackRepository;
 import net.twasiplugin.dependency.streamtracker.events.StreamStartEvent;
 import net.twasiplugin.dependency.streamtracker.events.StreamStopEvent;
 import net.twasiplugin.dependency.streamtracker.events.StreamTrackEvent;
+import org.mongodb.morphia.annotations.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,9 +115,10 @@ public class StreamTracker extends Thread {
         this.views = currentUser.getViewCount();
         this.followers = usersFollows.getTotal();
         StreamTrackEntity entity = new StreamTrackEntity(stream, dto.getGameId(), dto.getTitle(), dto.getViewerCount(), userMessages);
-        userMessages = new ArrayList<>();
         streamTrackRepo.add(entity);
         streamTrackRepo.commitAll();
+        userMessages = new ArrayList<>();
+        TwasiLogger.log.debug("Saved trackentity for Stream #" + stream.getStreamId() + " (" + stream.getUser().getTwitchAccount().getDisplayName() + ") into database.");
         return entity;
     }
 
@@ -145,7 +147,8 @@ public class StreamTracker extends Thread {
         getUserMessagesObject(acc).commands++;
     }
 
-    public class UserMessagesAndCommands {
+    @Entity
+    public static class UserMessagesAndCommands {
         public int messages = 0;
         public int commands = 0;
         public String twitchId;
@@ -154,6 +157,9 @@ public class StreamTracker extends Thread {
         public UserMessagesAndCommands(TwitchAccount acc) {
             this.twitchId = acc.getTwitchId();
             this.displayName = acc.getDisplayName();
+        }
+
+        public UserMessagesAndCommands() {
         }
     }
 }

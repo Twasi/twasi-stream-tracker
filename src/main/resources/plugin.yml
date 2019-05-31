@@ -5,12 +5,14 @@ description: Track stream data of all users
 version: 1.0
 hidden: true
 autoInstall: true
+messageHandler: true
 
 api: |
   type StreamTracker {
     lastStream: Stream,
     streamsByRange(start: String, end: String): [Stream],
     lastStreamWithOffset(offset: Int): Stream,
+    streamById(streamId: String): Stream,
     allStreamData: [StreamTrackEntity]
   }
 
@@ -21,7 +23,8 @@ api: |
     streamType: String,
     communityIds: [String],
     tagIds: [String],
-    data: [StreamTrackEntity]
+    data: [StreamTrackEntity],
+    topChatters: [StreamTrackChatter]
   }
 
   type StreamTrackEntity {
@@ -32,4 +35,11 @@ api: |
     chatMessages: Int,
     chatCommands: Int,
     timestamp: String
+  }
+
+  type StreamTrackChatter {
+    twitchId: String,
+    displayName: String,
+    messages: Int,
+    commands: Int
   }

@@ -1,6 +1,7 @@
 package net.twasiplugin.dependency.streamtracker.database;
 
 import net.twasi.core.database.lib.Repository;
+import net.twasi.core.logger.TwasiLogger;
 import net.twasiplugin.dependency.streamtracker.StreamTracker;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class StreamTrackRepository extends Repository<StreamTrackEntity> {
             List<StreamTrackEntity> streamEntities = store.createQuery(StreamTrackEntity.class).field("stream").equal(stream).asList();
             return streamEntities;
         } catch (Exception e) {
+            TwasiLogger.log.debug(e);
             return new ArrayList<>();
         }
     }
@@ -37,7 +39,7 @@ public class StreamTrackRepository extends Repository<StreamTrackEntity> {
                     List<StreamTracker.UserMessagesAndCommands> userMessages = new ArrayList<>(tmp.getUserMessages());
                     entity.getUserMessages().forEach(e -> {
                         StreamTracker.UserMessagesAndCommands msgs = userMessages.stream().filter(e1 -> e1.twitchId.equals(e.twitchId)).findFirst().orElse(null);
-                        if(msgs != null) {
+                        if (msgs != null) {
                             msgs.messages += e.messages;
                             msgs.commands += e.commands;
                         } else {
@@ -52,7 +54,7 @@ public class StreamTrackRepository extends Repository<StreamTrackEntity> {
             }
             return list;
         } catch (Throwable t) {
-            t.printStackTrace();
+            TwasiLogger.log.debug(t);
         }
         return new ArrayList<>();
     }

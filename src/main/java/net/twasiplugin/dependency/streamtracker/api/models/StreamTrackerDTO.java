@@ -56,4 +56,8 @@ public class StreamTrackerDTO {
         }
     }
 
+    public StreamDTO getStreamById(String id) {
+        return null;
+    }
+
 }
