@@ -1,15 +1,15 @@
 package net.twasiplugin.dependency.streamtracker.api.models;
 
+import com.google.common.collect.Lists;
 import net.twasi.core.logger.TwasiLogger;
 import net.twasi.core.services.ServiceRegistry;
 import net.twasi.core.services.providers.DataService;
+import net.twasiplugin.dependency.streamtracker.StreamTracker;
 import net.twasiplugin.dependency.streamtracker.database.StreamEntity;
 import net.twasiplugin.dependency.streamtracker.database.StreamTrackEntity;
 import net.twasiplugin.dependency.streamtracker.database.StreamTrackRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static net.twasiplugin.dependency.streamtracker.StreamTrackerPlugin.getGameIdsAndNames;
@@ -76,7 +76,21 @@ public class StreamDTO {
     }
 
     public List<StreamTrackChattersDTO> getTopChatters() {
-        return null;
+        List<StreamTrackEntity> streamEntitiesByStream = repo.getStreamEntitiesByStream(entity);
+        Map<String, StreamTracker.UserMessagesAndCommands> msgs = new HashMap<>();
+        streamEntitiesByStream.forEach(entity -> {
+            if (entity.getUserMessages() != null)
+                entity.getUserMessages().forEach(uMsgs -> {
+                    if (msgs.containsKey(uMsgs.twitchId)) {
+                        msgs.get(uMsgs.twitchId).messages += uMsgs.messages;
+                    } else {
+                        msgs.put(uMsgs.twitchId, uMsgs);
+                    }
+                });
+        });
+        LinkedHashMap<String, StreamTracker.UserMessagesAndCommands> sorted = msgs.entrySet().stream().sorted(Comparator.comparingInt(e -> e.getValue().messages)).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+        return Lists.reverse(sorted.values().stream().map(StreamTrackChattersDTO::new).collect(Collectors.toList()));
     }
 
 }

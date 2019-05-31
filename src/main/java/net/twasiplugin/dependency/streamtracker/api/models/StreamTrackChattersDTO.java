@@ -1,6 +1,7 @@
 package net.twasiplugin.dependency.streamtracker.api.models;
 
 import net.twasi.core.database.models.TwitchAccount;
+import net.twasiplugin.dependency.streamtracker.StreamTracker;
 
 public class StreamTrackChattersDTO {
 
@@ -21,6 +22,10 @@ public class StreamTrackChattersDTO {
         this.commands = commands;
         this.twitchId = acc.getTwitchId();
         this.displayName = acc.getDisplayName();
+    }
+
+    public StreamTrackChattersDTO(StreamTracker.UserMessagesAndCommands msgs) {
+        this(msgs.twitchId, msgs.displayName, msgs.messages, msgs.commands);
     }
 
     public String getTwitchId() {
