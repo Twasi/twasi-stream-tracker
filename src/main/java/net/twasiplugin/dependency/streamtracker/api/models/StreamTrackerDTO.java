@@ -57,7 +57,11 @@ public class StreamTrackerDTO {
     }
 
     public StreamDTO getStreamById(String id) {
-        return null;
+        try {
+            return new StreamDTO(repo.getStreamEntityByStreamId(id));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }
