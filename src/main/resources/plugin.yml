@@ -13,7 +13,14 @@ api: |
     streamsByRange(start: String, end: String): [Stream],
     lastStreamWithOffset(offset: Int): Stream,
     streamById(streamId: String): Stream,
-    allStreamData: [StreamTrackEntity]
+    allStreamData: [StreamTrackEntity],
+    globalStats: AccountStats
+  }
+
+  type AccountStats {
+    totalTrackedViewers: Int,
+    totalTrackedMessages: Int,
+    totalTrackedStreams: Int
   }
 
   type Stream {

@@ -64,4 +64,8 @@ public class StreamTrackerDTO {
         }
     }
 
+    public AccountStatsDTO getGlobalStats(){
+        return new AccountStatsDTO(user);
+    }
+
 }

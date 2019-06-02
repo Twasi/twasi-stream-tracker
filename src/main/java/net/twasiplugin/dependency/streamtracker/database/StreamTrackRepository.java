@@ -1,11 +1,15 @@
 package net.twasiplugin.dependency.streamtracker.database;
 
 import net.twasi.core.database.lib.Repository;
+import net.twasi.core.database.models.User;
 import net.twasi.core.logger.TwasiLogger;
+import net.twasi.core.services.providers.DataService;
 import net.twasiplugin.dependency.streamtracker.StreamTracker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class StreamTrackRepository extends Repository<StreamTrackEntity> {
 
@@ -57,6 +61,34 @@ public class StreamTrackRepository extends Repository<StreamTrackEntity> {
             TwasiLogger.log.debug(t);
         }
         return new ArrayList<>();
+    }
+
+    public int getTotalMessages(User user) {
+        AtomicInteger amount = new AtomicInteger();
+        StreamRepository repo = DataService.get().get(StreamRepository.class);
+        repo.getAllByUser(user).forEach(stream ->
+                getStreamEntitiesByStream(stream).forEach(entity -> {
+                    if (entity.getUserMessages() != null)
+                        entity.getUserMessages().forEach(msgs ->
+                                amount.addAndGet(msgs.messages));
+                }));
+        return amount.get();
+    }
+
+    public List<String> getChatterTwitchIds(User user) {
+        List<String> twitchIds = new ArrayList<>();
+        StreamRepository repo = DataService.get().get(StreamRepository.class);
+        repo.getAllByUser(user).forEach(stream ->
+                getStreamEntitiesByStream(stream).forEach(entity -> {
+                    if (entity.getUserMessages() != null)
+                        entity.getUserMessages().forEach(msgs ->
+                                twitchIds.add(msgs.twitchId));
+                }));
+        return twitchIds.stream().distinct().collect(Collectors.toList());
+    }
+
+    public int getChatterAmount(User user) {
+        return getChatterTwitchIds(user).size();
     }
 
 }

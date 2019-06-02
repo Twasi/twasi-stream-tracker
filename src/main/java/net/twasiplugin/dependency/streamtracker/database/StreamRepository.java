@@ -31,4 +31,8 @@ public class StreamRepository extends Repository<StreamEntity> {
         return store.createQuery(StreamEntity.class).field("user").equal(user).asList();
     }
 
+    public long getStreamAmountByUser(User user) {
+        return store.createQuery(StreamEntity.class).field("user").equal(user).count();
+    }
+
 }
