@@ -93,4 +93,12 @@ public class StreamDTO {
         return Lists.reverse(sorted.values().stream().map(StreamTrackChattersDTO::new).collect(Collectors.toList()));
     }
 
+    public int getNewFollowers(){
+        return this.entity.getNewFollowers();
+    }
+
+    public int getNewViews(){
+        return this.entity.getNewViews();
+    }
+
 }

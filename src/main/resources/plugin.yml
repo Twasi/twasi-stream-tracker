@@ -28,6 +28,8 @@ api: |
     language: String,
     startedAt: String,
     streamType: String,
+    newFollowers: Int,
+    newViews: Int,
     communityIds: [String],
     tagIds: [String],
     data: [StreamTrackEntity],
