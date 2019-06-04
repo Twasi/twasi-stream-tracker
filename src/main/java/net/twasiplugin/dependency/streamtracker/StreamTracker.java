@@ -124,7 +124,7 @@ public class StreamTracker extends Thread {
         List<String> all = new ArrayList<>(tmi().chatters().getByName(user.getTwitchAccount().getUserName()).getChatters().getAll());
         Map<String, String> idsAndNames = new HashMap<>();
 
-        while (all.size() > 100) {
+        while (all.size() > 0) {
             List<String> collect = all.stream().limit(100).collect(Collectors.toList());
             all.removeAll(collect);
             helix().users().getUsers(null, collect.toArray(new String[0]), new TwitchRequestOptions().withAuth(user.getTwitchAccount().toAuthContext())).forEach(e -> {
