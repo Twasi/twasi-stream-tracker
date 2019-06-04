@@ -20,7 +20,14 @@ api: |
   type AccountStats {
     totalTrackedViewers: Int,
     totalTrackedMessages: Int,
-    totalTrackedStreams: Int
+    totalTrackedStreams: Int,
+    viewTime: [ViewTime]
+  }
+
+  type ViewTime {
+    twitchId: String,
+    displayName: String,
+    minutes: Int
   }
 
   type Stream {

@@ -91,4 +91,15 @@ public class StreamTrackRepository extends Repository<StreamTrackEntity> {
         return getChatterTwitchIds(user).size();
     }
 
+    public int getTotalMessagesByUserAndTwitchId(User user, String twitchId) {
+        AtomicInteger amount = new AtomicInteger();
+        StreamRepository repo = DataService.get().get(StreamRepository.class);
+        repo.getAllByUser(user).forEach(stream ->
+                getStreamEntitiesByStream(stream).forEach(entity -> {
+                    if (entity.getUserMessages() != null)
+                        entity.getUserMessages().stream().filter(e -> e.twitchId.equals(twitchId)).forEach(e -> amount.addAndGet(e.messages));
+                }));
+        return amount.get();
+    }
+
 }

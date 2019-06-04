@@ -11,10 +11,7 @@ import net.twasi.twitchapi.helix.streams.response.StreamDTO;
 import net.twasi.twitchapi.helix.users.response.UserDTO;
 import net.twasi.twitchapi.helix.users.response.UserFollowDTO;
 import net.twasi.twitchapi.options.TwitchRequestOptions;
-import net.twasiplugin.dependency.streamtracker.database.StreamEntity;
-import net.twasiplugin.dependency.streamtracker.database.StreamRepository;
-import net.twasiplugin.dependency.streamtracker.database.StreamTrackEntity;
-import net.twasiplugin.dependency.streamtracker.database.StreamTrackRepository;
+import net.twasiplugin.dependency.streamtracker.database.*;
 import net.twasiplugin.dependency.streamtracker.events.StreamStartEvent;
 import net.twasiplugin.dependency.streamtracker.events.StreamStopEvent;
 import net.twasiplugin.dependency.streamtracker.events.StreamTrackEvent;
@@ -52,6 +49,8 @@ public class StreamTracker extends Thread {
             .get(DataService.class).get(StreamRepository.class);
     private static StreamTrackRepository streamTrackRepo = ServiceRegistry
             .get(DataService.class).get(StreamTrackRepository.class);
+    private static ViewTimeRepository viewTimeRepo = ServiceRegistry
+            .get(DataService.class).get(ViewTimeRepository.class);
 
     public StreamTracker(TwasiInterface twasiInterface) {
         this.setDaemon(true);
@@ -117,6 +116,14 @@ public class StreamTracker extends Thread {
         StreamTrackEntity entity = new StreamTrackEntity(stream, dto.getGameId(), dto.getTitle(), dto.getViewerCount(), userMessages);
         streamTrackRepo.add(entity);
         streamTrackRepo.commitAll();
+
+        userMessages.forEach(msgs -> {
+            ViewTimeEntity vtEntity = viewTimeRepo.getViewTimeEntityOrCreate(user, msgs.twitchId);
+            vtEntity.increment();
+            vtEntity.setDisplayName(msgs.displayName);
+            viewTimeRepo.commit(vtEntity);
+        });
+
         userMessages = new ArrayList<>();
         TwasiLogger.log.debug("Saved trackentity for Stream #" + stream.getStreamId() + " (" + stream.getUser().getTwitchAccount().getDisplayName() + ") into database.");
         return entity;
