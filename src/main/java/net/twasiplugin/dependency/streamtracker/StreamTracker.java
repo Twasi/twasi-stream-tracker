@@ -18,10 +18,14 @@ import net.twasiplugin.dependency.streamtracker.events.StreamTrackEvent;
 import org.mongodb.morphia.annotations.Entity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static net.twasi.twitchapi.TwitchAPI.helix;
+import static net.twasi.twitchapi.TwitchAPI.tmi;
 import static net.twasiplugin.dependency.streamtracker.StreamTrackerPlugin.service;
 
 public class StreamTracker extends Thread {
@@ -117,10 +121,21 @@ public class StreamTracker extends Thread {
         streamTrackRepo.add(entity);
         streamTrackRepo.commitAll();
 
-        userMessages.forEach(msgs -> {
-            ViewTimeEntity vtEntity = viewTimeRepo.getViewTimeEntityOrCreate(user, msgs.twitchId);
+        List<String> all = new ArrayList<>(tmi().chatters().getByName(user.getTwitchAccount().getUserName()).getChatters().getAll());
+        Map<String, String> idsAndNames = new HashMap<>();
+
+        while (all.size() > 100) {
+            List<String> collect = all.stream().limit(100).collect(Collectors.toList());
+            all.removeAll(collect);
+            helix().users().getUsers(null, collect.toArray(new String[0]), new TwitchRequestOptions().withAuth(user.getTwitchAccount().toAuthContext())).forEach(e -> {
+                idsAndNames.put(e.getId(), e.getDisplayName());
+            });
+        }
+
+        idsAndNames.forEach((id, name) -> {
+            ViewTimeEntity vtEntity = viewTimeRepo.getViewTimeEntityOrCreate(user, id);
             vtEntity.increment();
-            vtEntity.setDisplayName(msgs.displayName);
+            vtEntity.setDisplayName(name);
             viewTimeRepo.commit(vtEntity);
         });
 
