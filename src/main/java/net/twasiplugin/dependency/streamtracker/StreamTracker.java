@@ -10,20 +10,21 @@ import net.twasi.twitchapi.helix.streams.response.StreamDTO;
 import net.twasi.twitchapi.helix.users.response.UserDTO;
 import net.twasi.twitchapi.kraken.channels.response.ChannelDTO;
 import net.twasi.twitchapi.options.TwitchRequestOptions;
-import net.twasiplugin.dependency.streamtracker.database.StreamEntity;
-import net.twasiplugin.dependency.streamtracker.database.StreamRepository;
-import net.twasiplugin.dependency.streamtracker.database.StreamTrackEntity;
-import net.twasiplugin.dependency.streamtracker.database.StreamTrackRepository;
+import net.twasiplugin.dependency.streamtracker.database.*;
 import net.twasiplugin.dependency.streamtracker.events.StreamStartEvent;
 import net.twasiplugin.dependency.streamtracker.events.StreamStopEvent;
 import net.twasiplugin.dependency.streamtracker.events.StreamTrackEvent;
 import org.mongodb.morphia.annotations.Entity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static net.twasi.twitchapi.TwitchAPI.helix;
+import static net.twasi.twitchapi.TwitchAPI.tmi;
 import static net.twasi.twitchapi.TwitchAPI.kraken;
 import static net.twasiplugin.dependency.streamtracker.StreamTrackerPlugin.service;
 
@@ -48,6 +49,8 @@ public class StreamTracker extends Thread {
             .get(DataService.class).get(StreamRepository.class);
     private static StreamTrackRepository streamTrackRepo = ServiceRegistry
             .get(DataService.class).get(StreamTrackRepository.class);
+    private static ViewTimeRepository viewTimeRepo = ServiceRegistry
+            .get(DataService.class).get(ViewTimeRepository.class);
 
     public StreamTracker(TwasiInterface twasiInterface) {
         this.setDaemon(true);
@@ -109,9 +112,30 @@ public class StreamTracker extends Thread {
         }
         streamRepo.commit(stream);
         streamRepo.commitAll();
+        this.views = currentUser.getViewCount();
+        this.followers = usersFollows.getTotal();
         StreamTrackEntity entity = new StreamTrackEntity(stream, dto.getGameId(), dto.getTitle(), dto.getViewerCount(), userMessages);
         streamTrackRepo.add(entity);
         streamTrackRepo.commitAll();
+
+        List<String> all = new ArrayList<>(tmi().chatters().getByName(user.getTwitchAccount().getUserName()).getChatters().getAll());
+        Map<String, String> idsAndNames = new HashMap<>();
+
+        while (all.size() > 0) {
+            List<String> collect = all.stream().limit(100).collect(Collectors.toList());
+            all.removeAll(collect);
+            helix().users().getUsers(null, collect.toArray(new String[0]), new TwitchRequestOptions().withAuth(user.getTwitchAccount().toAuthContext())).forEach(e -> {
+                idsAndNames.put(e.getId(), e.getDisplayName());
+            });
+        }
+
+        idsAndNames.forEach((id, name) -> {
+            ViewTimeEntity vtEntity = viewTimeRepo.getViewTimeEntityOrCreate(user, id);
+            vtEntity.increment();
+            vtEntity.setDisplayName(name);
+            viewTimeRepo.commit(vtEntity);
+        });
+
         userMessages = new ArrayList<>();
         TwasiLogger.log.debug("Saved trackentity for Stream #" + stream.getStreamId() + " (" + stream.getUser().getTwitchAccount().getDisplayName() + ") into database.");
         return entity;
