@@ -112,8 +112,6 @@ public class StreamTracker extends Thread {
         }
         streamRepo.commit(stream);
         streamRepo.commitAll();
-        this.views = currentUser.getViewCount();
-        this.followers = usersFollows.getTotal();
         StreamTrackEntity entity = new StreamTrackEntity(stream, dto.getGameId(), dto.getTitle(), dto.getViewerCount(), userMessages);
         streamTrackRepo.add(entity);
         streamTrackRepo.commitAll();
