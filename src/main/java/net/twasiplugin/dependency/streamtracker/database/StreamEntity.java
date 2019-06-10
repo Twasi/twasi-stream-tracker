@@ -20,11 +20,13 @@ public class StreamEntity extends BaseEntity {
     private String streamType;
     private List<String> communityIds;
     private List<String> tagIds;
-    private int newFollowers = 0;
-    private int newViews = 0;
+    private int startFollowers;
+    private int startViews;
+    private int endFollowers;
+    private int endViews;
 
 
-    public StreamEntity(User user, String streamId, String language, Date startedAt, String streamType, List<String> communityIds, List<String> tagIds) {
+    public StreamEntity(User user, String streamId, String language, Date startedAt, String streamType, List<String> communityIds, List<String> tagIds, int followers, int views) {
         this.user = user;
         this.streamId = streamId;
         this.language = language;
@@ -32,6 +34,10 @@ public class StreamEntity extends BaseEntity {
         this.streamType = streamType;
         this.communityIds = communityIds;
         this.tagIds = tagIds;
+        this.startFollowers = followers;
+        this.startViews = views;
+        this.endFollowers = followers;
+        this.endViews = views;
     }
 
     public StreamEntity() {
@@ -65,19 +71,28 @@ public class StreamEntity extends BaseEntity {
         return tagIds;
     }
 
-    public int getNewFollowers() {
-        return newFollowers;
+    public int getStartFollowers() {
+        return startFollowers;
     }
 
-    public void setNewFollowers(int newFollowers) {
-        this.newFollowers = newFollowers;
+    public int getStartViews() {
+        return startViews;
     }
 
-    public int getNewViews() {
-        return newViews;
+    public int getEndFollowers() {
+        return endFollowers;
     }
 
-    public void setNewViews(int newViews) {
-        this.newViews = newViews;
+    public int getEndViews() {
+        return endViews;
+    }
+
+
+    public void setFollowers(int newFollowers) {
+        this.endFollowers = newFollowers;
+    }
+
+    public void setViews(int newViews) {
+        this.endViews = newViews;
     }
 }

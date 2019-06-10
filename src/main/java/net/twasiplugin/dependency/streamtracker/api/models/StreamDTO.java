@@ -93,12 +93,28 @@ public class StreamDTO {
         return Lists.reverse(sorted.values().stream().map(StreamTrackChattersDTO::new).collect(Collectors.toList()));
     }
 
+    public int getStartFollowers(){
+        return this.entity.getStartFollowers();
+    }
+
+    public int getStartViews(){
+        return this.entity.getStartViews();
+    }
+
+    public int getEndFollowers(){
+        return this.entity.getEndFollowers();
+    }
+
+    public int getEndViews(){
+        return this.entity.getEndViews();
+    }
+
     public int getNewFollowers(){
-        return this.entity.getNewFollowers();
+        return getEndFollowers() - getStartFollowers();
     }
 
     public int getNewViews(){
-        return this.entity.getNewViews();
+        return getEndViews() - getStartViews();
     }
 
 }

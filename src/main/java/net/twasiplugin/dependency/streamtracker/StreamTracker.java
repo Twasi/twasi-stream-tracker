@@ -6,10 +6,9 @@ import net.twasi.core.interfaces.api.TwasiInterface;
 import net.twasi.core.logger.TwasiLogger;
 import net.twasi.core.services.ServiceRegistry;
 import net.twasi.core.services.providers.DataService;
-import net.twasi.twitchapi.helix.HelixResponseWrapper;
 import net.twasi.twitchapi.helix.streams.response.StreamDTO;
 import net.twasi.twitchapi.helix.users.response.UserDTO;
-import net.twasi.twitchapi.helix.users.response.UserFollowDTO;
+import net.twasi.twitchapi.kraken.channels.response.ChannelDTO;
 import net.twasi.twitchapi.options.TwitchRequestOptions;
 import net.twasiplugin.dependency.streamtracker.database.*;
 import net.twasiplugin.dependency.streamtracker.events.StreamStartEvent;
@@ -26,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static net.twasi.twitchapi.TwitchAPI.helix;
 import static net.twasi.twitchapi.TwitchAPI.tmi;
+import static net.twasi.twitchapi.TwitchAPI.kraken;
 import static net.twasiplugin.dependency.streamtracker.StreamTrackerPlugin.service;
 
 public class StreamTracker extends Thread {
@@ -43,10 +43,6 @@ public class StreamTracker extends Thread {
 
     // Tracked data from UserPlugin class
     private List<UserMessagesAndCommands> userMessages; // TwitchID and amount of messages and commands
-
-    // Stream temporary data (last track time follower amount f. e.)
-    private int followers;
-    private int views;
 
     // Repositories
     private static StreamRepository streamRepo = ServiceRegistry
@@ -105,18 +101,17 @@ public class StreamTracker extends Thread {
     private StreamTrackEntity processDTO(StreamDTO dto) {
         StreamEntity stream = streamRepo.getStreamEntityByStreamId(dto.getId());
         UserDTO currentUser = helix().users().withAuth(twasiInterface.getStreamer().getUser().getTwitchAccount().toAuthContext()).getCurrentUser();
-        HelixResponseWrapper<UserFollowDTO> usersFollows = helix().users().getUsersFollows(null, this.user.getTwitchAccount().getTwitchId(), new TwitchRequestOptions().withAuth(this.user.getTwitchAccount().toAuthContext()));
+        ChannelDTO channelDTO = kraken().channels().withAuth(user.getTwitchAccount().toAuthContext()).updateChannel(null, null);
         if (stream == null) {
             TwasiLogger.log.debug("[Tracker] Tracking new stream of user " + twitchAccount.getDisplayName() + ".");
-            stream = new StreamEntity(user, dto.getId(), dto.getLanguage(), dto.getStartedAt(), dto.getType(), dto.getCommunityIds(), dto.getTagIds());
+            stream = new StreamEntity(user, dto.getId(), dto.getLanguage(), dto.getStartedAt(), dto.getType(), dto.getCommunityIds(), dto.getTagIds(), channelDTO.getFollowers(), currentUser.getViewCount());
             streamRepo.add(stream);
         } else {
-            stream.setNewFollowers(stream.getNewFollowers() + (usersFollows.getTotal() - views));
-            stream.setNewViews(stream.getNewViews() + (currentUser.getViewCount() - views));
+            stream.setFollowers(channelDTO.getFollowers());
+            stream.setViews(currentUser.getViewCount());
         }
+        streamRepo.commit(stream);
         streamRepo.commitAll();
-        this.views = currentUser.getViewCount();
-        this.followers = usersFollows.getTotal();
         StreamTrackEntity entity = new StreamTrackEntity(stream, dto.getGameId(), dto.getTitle(), dto.getViewerCount(), userMessages);
         streamTrackRepo.add(entity);
         streamTrackRepo.commitAll();
