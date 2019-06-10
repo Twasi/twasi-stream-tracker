@@ -128,6 +128,7 @@ public class StreamTracker extends Thread {
             List<String> collect = all.stream().limit(100).collect(Collectors.toList());
             all.removeAll(collect);
             helix().users().getUsers(null, collect.toArray(new String[0]), new TwitchRequestOptions().withAuth(user.getTwitchAccount().toAuthContext())).forEach(e -> {
+                TwasiLogger.log.debug("Viewer tracked: " + e.getId() + " (" + e.getDisplayName() + ")");
                 idsAndNames.put(e.getId(), e.getDisplayName());
             });
         }

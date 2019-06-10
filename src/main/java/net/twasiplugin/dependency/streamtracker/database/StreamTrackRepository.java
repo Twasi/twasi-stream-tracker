@@ -100,6 +100,19 @@ public class StreamTrackRepository extends Repository<StreamTrackEntity> {
                         entity.getUserMessages().stream().filter(e -> e.twitchId.equals(twitchId)).forEach(e -> amount.addAndGet(e.messages));
                 }));
         return amount.get();
-    }
+    }/*
+        try {
+            Iterator<Document> aggregate = store.createAggregation(StreamTrackEntity.class)
+                    .lookup("StreamEntity", "stream._id", "_id", " ")
+                    .match(store.createQuery(Document.class).disableValidation().field("streamJoined.user._id").equal(user.getId()))
+                    .unwind("userMessages");
+                    /* .match(store.createQuery(Document.class).disableValidation().field("twitchId").equal(twitchId))
+                    .group("twitchId", grouping("count", new Accumulator("$sum", 1)))
+                    .project(Projection.projection("count"))
+                    .aggregate(Document.class);
+
+            Document first = aggregate.next();
+
+            return first.getInteger("count");*/
 
 }
