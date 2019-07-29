@@ -3,6 +3,7 @@ package net.twasiplugin.dependency.streamtracker.api.models;
 import net.twasi.core.database.models.User;
 import net.twasi.core.services.ServiceRegistry;
 import net.twasi.core.services.providers.DataService;
+import net.twasiplugin.dependency.streamtracker.database.StreamEntity;
 import net.twasiplugin.dependency.streamtracker.database.StreamRepository;
 import net.twasiplugin.dependency.streamtracker.database.StreamTrackEntity;
 import net.twasiplugin.dependency.streamtracker.database.StreamTrackRepository;
@@ -27,8 +28,10 @@ public class StreamTrackerDTO {
 
     public StreamDTO getLastStream() {
         try {
-            return new StreamDTO(repo.getLatestStreamEntityOfUser(user));
-        } catch(Exception e) {
+            StreamEntity latestStreamEntityOfUser = repo.getLatestStreamEntityOfUser(user);
+            if (latestStreamEntityOfUser == null) return null;
+            return new StreamDTO(latestStreamEntityOfUser);
+        } catch (Exception e) {
             return null;
         }
     }
@@ -68,7 +71,7 @@ public class StreamTrackerDTO {
         }
     }
 
-    public AccountStatsDTO getGlobalStats(){
+    public AccountStatsDTO getGlobalStats() {
         return new AccountStatsDTO(user);
     }
 
