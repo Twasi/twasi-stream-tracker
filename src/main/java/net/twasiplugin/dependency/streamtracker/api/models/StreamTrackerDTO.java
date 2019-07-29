@@ -26,7 +26,11 @@ public class StreamTrackerDTO {
     }
 
     public StreamDTO getLastStream() {
-        return new StreamDTO(repo.getLatestStreamEntityOfUser(user));
+        try {
+            return new StreamDTO(repo.getLatestStreamEntityOfUser(user));
+        } catch(Exception e) {
+            return null;
+        }
     }
 
     public List<StreamDTO> getStreamsByRange(String start, String end) {
