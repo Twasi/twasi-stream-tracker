@@ -2,6 +2,7 @@ package net.twasiplugin.dependency.streamtracker.database;
 
 import net.twasi.core.database.lib.Repository;
 import net.twasi.core.database.models.User;
+import org.mongodb.morphia.query.FindOptions;
 
 import java.util.List;
 
@@ -16,8 +17,8 @@ public class ViewTimeRepository extends Repository<ViewTimeEntity> {
         return entity;
     }
 
-    public List<ViewTimeEntity> getAllByUser(User user) {
-        return store.createQuery(ViewTimeEntity.class).field("user").equal(user).asList();
+    public List<ViewTimeEntity> getAllByUser(User user, int limit) {
+        return store.createQuery(ViewTimeEntity.class).field("user").equal(user).asList(new FindOptions().limit(limit));
     }
 
 }

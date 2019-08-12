@@ -4,18 +4,27 @@ import net.twasi.core.database.models.User;
 import net.twasi.core.events.TwasiEvent;
 import net.twasi.core.events.TwasiEventHandler;
 import net.twasi.core.services.IService;
+import net.twasi.core.services.providers.DataService;
+import net.twasiplugin.dependency.streamtracker.database.ViewTimeEntity;
+import net.twasiplugin.dependency.streamtracker.database.ViewTimeRepository;
 import net.twasiplugin.dependency.streamtracker.events.StreamStartEvent;
 import net.twasiplugin.dependency.streamtracker.events.StreamStopEvent;
 import net.twasiplugin.dependency.streamtracker.events.StreamTrackEvent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.time.Duration;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static net.twasiplugin.dependency.streamtracker.StreamTrackerPlugin.registeredTrackers;
 
 public class StreamTrackerService implements IService {
+    private ViewTimeRepository viewTimeRepo;
+
     private HashMap<String, RegisteredStreamEventHandlers> registeredHandlers = new HashMap<>();
+
+    StreamTrackerService() {
+        this.viewTimeRepo = DataService.get().get(ViewTimeRepository.class);
+    }
 
     void emitEvent(User user, TwasiEvent event) {
         RegisteredStreamEventHandlers handlers = registeredHandlers.get(user.getId().toString());
@@ -96,5 +105,19 @@ public class StreamTrackerService implements IService {
         if (streamTracker == null || !streamTracker.isTracking())
             throw new RuntimeException("No Tracker available for that Twitch ID");
         return streamTracker;
+    }
+
+    public Map<String, Duration> getViewTimePerTwitchIdByUser(User user) {
+        return getViewTimePerTwitchIdByUser(user, 100);
+    }
+
+    public Map<String, Duration> getViewTimePerTwitchIdByUser(User user, int limit) {
+        return viewTimeRepo.getAllByUser(user, limit).stream()
+                .collect(Collectors.toMap(ViewTimeEntity::getTwitchId, vte -> Duration.ofMinutes(vte.getMinutes())));
+    }
+
+    public Duration getViewTimeByTwitchId(User user, String twitchId) {
+        ViewTimeEntity vte = viewTimeRepo.getViewTimeEntityOrCreate(user, twitchId);
+        return Duration.ofMinutes(vte.getMinutes());
     }
 }
