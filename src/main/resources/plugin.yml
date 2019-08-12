@@ -21,7 +21,7 @@ api: |
     totalTrackedViewers: Int,
     totalTrackedMessages: Int,
     totalTrackedStreams: Int,
-    viewTime: [ViewTime],
+    viewTime(limit: Int): [ViewTime],
     messagesOfUser(twitchId: String): Int
   }
 

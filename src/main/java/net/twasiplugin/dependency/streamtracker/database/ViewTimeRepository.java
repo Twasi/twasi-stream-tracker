@@ -17,7 +17,7 @@ public class ViewTimeRepository extends Repository<ViewTimeEntity> {
         return entity;
     }
 
-    public List<ViewTimeEntity> getAllByUser(User user, int limit) {
+    public List<ViewTimeEntity> getByUser(User user, int limit) {
         return store.createQuery(ViewTimeEntity.class).field("user").equal(user).asList(new FindOptions().limit(limit));
     }
 

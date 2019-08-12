@@ -112,7 +112,7 @@ public class StreamTrackerService implements IService {
     }
 
     public Map<String, Duration> getViewTimePerTwitchIdByUser(User user, int limit) {
-        return viewTimeRepo.getAllByUser(user, limit).stream()
+        return viewTimeRepo.getByUser(user, limit).stream()
                 .collect(Collectors.toMap(ViewTimeEntity::getTwitchId, vte -> Duration.ofMinutes(vte.getMinutes())));
     }
 

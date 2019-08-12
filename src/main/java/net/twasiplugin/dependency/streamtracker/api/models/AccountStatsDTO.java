@@ -50,11 +50,11 @@ public class AccountStatsDTO {
         }
     }
 
-    public List<ViewTimeDTO> getViewTime() {
-        return viewTimeRepo.getAllByUser(user, limit).stream().map(ViewTimeDTO::new).collect(Collectors.toList());
+    public List<ViewTimeDTO> getViewTime(int limit) {
+        return viewTimeRepo.getByUser(user, limit).stream().map(ViewTimeDTO::new).collect(Collectors.toList());
     }
 
-    public int getMessagesOfUser(String twitchId){
+    public int getMessagesOfUser(String twitchId) {
         return trackRepo.getTotalMessagesByUserAndTwitchId(user, twitchId);
     }
 }
