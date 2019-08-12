@@ -2,6 +2,7 @@ package net.twasiplugin.dependency.streamtracker.database;
 
 import net.twasi.core.database.models.BaseEntity;
 import net.twasiplugin.dependency.streamtracker.StreamTracker;
+import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
 
@@ -12,8 +13,7 @@ import java.util.List;
 @Entity(value = "stream-track-entities", noClassnameStored = true)
 public class StreamTrackEntity extends BaseEntity {
 
-    @Reference
-    private StreamEntity stream;
+    private ObjectId stream;
 
     private String gameId;
     private String title;
@@ -24,7 +24,7 @@ public class StreamTrackEntity extends BaseEntity {
     public StreamTrackEntity() {
     }
 
-    public StreamTrackEntity(StreamEntity stream, String gameId, String title, int viewerCount, List<StreamTracker.UserMessagesAndCommands> userMessages) {
+    public StreamTrackEntity(ObjectId stream, String gameId, String title, int viewerCount, List<StreamTracker.UserMessagesAndCommands> userMessages) {
         this.stream = stream;
         this.gameId = gameId;
         this.title = title;
@@ -33,7 +33,7 @@ public class StreamTrackEntity extends BaseEntity {
         this.timestamp = Calendar.getInstance().getTime();
     }
 
-    public StreamTrackEntity(StreamEntity stream, String gameId, String title, int viewerCount, Date timestamp, List<StreamTracker.UserMessagesAndCommands> userMessages) {
+    public StreamTrackEntity(ObjectId stream, String gameId, String title, int viewerCount, Date timestamp, List<StreamTracker.UserMessagesAndCommands> userMessages) {
         this.stream = stream;
         this.gameId = gameId;
         this.title = title;
@@ -42,7 +42,7 @@ public class StreamTrackEntity extends BaseEntity {
         this.userMessages = userMessages;
     }
 
-    public StreamEntity getStream() {
+    public ObjectId getStream() {
         return stream;
     }
 

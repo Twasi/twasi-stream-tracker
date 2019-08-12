@@ -1,9 +1,8 @@
 package net.twasiplugin.dependency.streamtracker.database;
 
 import net.twasi.core.database.models.BaseEntity;
-import net.twasi.core.database.models.User;
+import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Date;
 import java.util.List;
@@ -11,8 +10,7 @@ import java.util.List;
 @Entity(value = "tracked-streams", noClassnameStored = true)
 public class StreamEntity extends BaseEntity {
 
-    @Reference
-    private User user;
+    private ObjectId user;
 
     private String streamId;
     private String language;
@@ -26,7 +24,7 @@ public class StreamEntity extends BaseEntity {
     private int endViews;
 
 
-    public StreamEntity(User user, String streamId, String language, Date startedAt, String streamType, List<String> communityIds, List<String> tagIds, int followers, int views) {
+    public StreamEntity(ObjectId user, String streamId, String language, Date startedAt, String streamType, List<String> communityIds, List<String> tagIds, int followers, int views) {
         this.user = user;
         this.streamId = streamId;
         this.language = language;
@@ -43,7 +41,7 @@ public class StreamEntity extends BaseEntity {
     public StreamEntity() {
     }
 
-    public User getUser() {
+    public ObjectId getUser() {
         return user;
     }
 

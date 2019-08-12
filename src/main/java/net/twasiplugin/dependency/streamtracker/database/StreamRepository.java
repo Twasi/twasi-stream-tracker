@@ -21,18 +21,17 @@ public class StreamRepository extends Repository<StreamEntity> {
 
     public StreamEntity getLatestStreamEntityOfUser(User user) {
         try {
-            return store.createQuery(StreamEntity.class).field("user").equal(user).order("-startedAt").get();
+            return store.createQuery(StreamEntity.class).field("user").equal(user.getId()).order("-startedAt").get();
         } catch (Exception e) {
             return null;
         }
     }
 
     public List<StreamEntity> getAllByUser(User user) {
-        return store.createQuery(StreamEntity.class).field("user").equal(user).asList();
+        return store.createQuery(StreamEntity.class).field("user").equal(user.getId()).asList();
     }
 
     public long getStreamAmountByUser(User user) {
-        return store.createQuery(StreamEntity.class).field("user").equal(user).count();
+        return store.createQuery(StreamEntity.class).field("user").equal(user.getId()).count();
     }
-
 }

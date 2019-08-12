@@ -2,6 +2,7 @@ package net.twasiplugin.dependency.streamtracker;
 
 import net.twasi.core.database.models.TwitchAccount;
 import net.twasi.core.database.models.User;
+import net.twasi.core.database.repositories.UserRepository;
 import net.twasi.core.interfaces.api.TwasiInterface;
 import net.twasi.core.logger.TwasiLogger;
 import net.twasi.core.services.ServiceRegistry;
@@ -104,7 +105,7 @@ public class StreamTracker extends Thread {
         ChannelDTO channelDTO = kraken().channels().withAuth(user.getTwitchAccount().toAuthContext()).updateChannel(null, null);
         if (stream == null) {
             TwasiLogger.log.debug("[Tracker] Tracking new stream of user " + twitchAccount.getDisplayName() + ".");
-            stream = new StreamEntity(user, dto.getId(), dto.getLanguage(), dto.getStartedAt(), dto.getType(), dto.getCommunityIds(), dto.getTagIds(), channelDTO.getFollowers(), currentUser.getViewCount());
+            stream = new StreamEntity(user.getId(), dto.getId(), dto.getLanguage(), dto.getStartedAt(), dto.getType(), dto.getCommunityIds(), dto.getTagIds(), channelDTO.getFollowers(), currentUser.getViewCount());
             streamRepo.add(stream);
         } else {
             stream.setFollowers(channelDTO.getFollowers());
@@ -112,7 +113,7 @@ public class StreamTracker extends Thread {
         }
         streamRepo.commit(stream);
         streamRepo.commitAll();
-        StreamTrackEntity entity = new StreamTrackEntity(stream, dto.getGameId(), dto.getTitle(), dto.getViewerCount(), userMessages);
+        StreamTrackEntity entity = new StreamTrackEntity(stream.getId(), dto.getGameId(), dto.getTitle(), dto.getViewerCount(), userMessages);
         streamTrackRepo.add(entity);
         streamTrackRepo.commitAll();
 
@@ -136,7 +137,8 @@ public class StreamTracker extends Thread {
         });
 
         userMessages = new ArrayList<>();
-        TwasiLogger.log.debug("Saved trackentity for Stream #" + stream.getStreamId() + " (" + stream.getUser().getTwitchAccount().getDisplayName() + ") into database.");
+        User user = DataService.get().get(UserRepository.class).getById(stream.getUser());
+        TwasiLogger.log.debug("Saved trackentity for Stream #" + stream.getStreamId() + " (" + user.getTwitchAccount().getDisplayName() + ") into database.");
         return entity;
     }
 

@@ -1,6 +1,8 @@
 package net.twasiplugin.dependency.streamtracker.api.models;
 
 import com.google.common.collect.Lists;
+import net.twasi.core.database.models.User;
+import net.twasi.core.database.repositories.UserRepository;
 import net.twasi.core.logger.TwasiLogger;
 import net.twasi.core.services.ServiceRegistry;
 import net.twasi.core.services.providers.DataService;
@@ -57,7 +59,8 @@ public class StreamDTO {
                     .map(StreamTrackDTO::new)
                     .collect(Collectors.toList());
 
-            Map<String, String> gameIdsAndNames = getGameIdsAndNames(collect.stream().map(StreamTrackDTO::getGameId).distinct().collect(Collectors.toList()), entity.getUser());
+            User user = DataService.get().get(UserRepository.class).getById(entity.getUser());
+            Map<String, String> gameIdsAndNames = getGameIdsAndNames(collect.stream().map(StreamTrackDTO::getGameId).distinct().collect(Collectors.toList()), user);
 
             List<StreamTrackDTO> finalList = new ArrayList<>();
 
