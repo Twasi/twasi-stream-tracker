@@ -1,5 +1,6 @@
 package net.twasiplugin.dependency.streamtracker.database;
 
+import com.mongodb.AggregationOptions;
 import com.mongodb.BasicDBObject;
 import net.twasi.core.database.lib.Repository;
 import net.twasi.core.database.models.User;
@@ -72,9 +73,10 @@ public class StreamTrackRepository extends Repository<StreamTrackEntity> {
         Iterator<Document> aggregate = store.createAggregation(StreamTrackEntity.class)
                 .lookup("tracked-streams", "stream", "_id", "stream")
                 .match(store.createQuery(Document.class).disableValidation().field("stream.user").equal(user.getId()).field("userMessages").exists())
-                .project(Projection.expression("numberMessages", new BasicDBObject("$size", "$userMessages")))
-                .group(Group.grouping("numberMessages", Accumulator.accumulator("$sum", "numberMessages")))
-                .aggregate(Document.class);
+                .project(Projection.projection("userMessages"))
+                .unwind("userMessages")
+                .group(Group.grouping("numberMessages", Accumulator.accumulator("$sum", "userMessages.messages")))
+                .aggregate(Document.class, AggregationOptions.builder().outputMode(AggregationOptions.OutputMode.CURSOR).build());
 
         if (!aggregate.hasNext()) {
             return 0;
@@ -84,64 +86,27 @@ public class StreamTrackRepository extends Repository<StreamTrackEntity> {
         return first.getInteger("numberMessages");
     }
 
-    /* public List<String> getChatterTwitchIds(User user) {
-        List<String> twitchIds = new ArrayList<>();
-        StreamRepository repo = DataService.get().get(StreamRepository.class);
-        repo.getAllByUser(user).forEach(stream ->
-                getStreamEntitiesByStream(stream).forEach(entity -> {
-                    if (entity.getUserMessages() != null)
-                        entity.getUserMessages().forEach(msgs ->
-                                twitchIds.add(msgs.twitchId));
-                }));
-        return twitchIds.stream().distinct().collect(Collectors.toList());
-    } */
-
     /**
-     *
-     * db.getCollection('stream-track-entities').aggregate(
-     *     [
-     *         {
-     *             $lookup: {
-     *                 from: "tracked-streams",
-     *                 localField: "stream",
-     *                 foreignField: "_id",
-     *                 as: "stream"
-     *             }
-     *         },
-     *         {
-     *             $match: {
-     *                 "stream.user": ObjectId("5ba3eb2573f13a64200f55d8"),
-     *                 "userMessages": { $exists: true }
-     *             }
-     *         },
-     *         {
-     *             $project: {
-     *                 userMessages: 1
-     *             }
-     *         },
-     *         {
-     *             $unwind: {
-     *                 path: "$userMessages"
-     *             }
-     *         },
-     *         {
-     *             $group: {
-     *                 _id: null,
-     *                 count: { $sum: "$userMessages.messages" }
-     *             }
-     *         }
-     *     ]
-     * )
-     *
-     * @param user
-     * @return
+     * Returns the distinct amount of chatter
+     * @param user the user to search chatter for
+     * @return the number of unique chatter
      */
     public int getChatterAmount(User user) {
         Iterator<Document> aggregate = store.createAggregation(StreamTrackEntity.class)
                 .lookup("tracked-streams", "stream", "_id", "stream")
                 .match(store.createQuery(Document.class).disableValidation().field("stream.user").equal(user.getId()).field("userMessages").exists())
-                .aggregate(Document.class);
-        return 0;
+                .project(Projection.projection("userMessages"))
+                .unwind("userMessages")
+                .group("userMessages.twitchId")
+                .group(Group.grouping("numberChatter", Accumulator.accumulator("$sum", 1)))
+                .aggregate(Document.class, AggregationOptions.builder().outputMode(AggregationOptions.OutputMode.CURSOR).build());
+
+        if (!aggregate.hasNext()) {
+            return 0;
+        }
+
+        Document first = aggregate.next();
+        return first.getInteger("numberChatter");
     }
 
     public int getTotalMessagesByUserAndTwitchId(User user, String twitchId) {
@@ -153,19 +118,5 @@ public class StreamTrackRepository extends Repository<StreamTrackEntity> {
                         entity.getUserMessages().stream().filter(e -> e.twitchId.equals(twitchId)).forEach(e -> amount.addAndGet(e.messages));
                 }));
         return amount.get();
-    }/*
-        try {
-            Iterator<Document> aggregate = store.createAggregation(StreamTrackEntity.class)
-                    .lookup("StreamEntity", "stream._id", "_id", " ")
-                    .match(store.createQuery(Document.class).disableValidation().field("streamJoined.user._id").equal(user.getId()))
-                    .unwind("userMessages");
-                    /* .match(store.createQuery(Document.class).disableValidation().field("twitchId").equal(twitchId))
-                    .group("twitchId", grouping("count", new Accumulator("$sum", 1)))
-                    .project(Projection.projection("count"))
-                    .aggregate(Document.class);
-
-            Document first = aggregate.next();
-
-            return first.getInteger("count");*/
-
+    }
 }
