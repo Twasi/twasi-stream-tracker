@@ -24,9 +24,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static net.twasi.twitchapi.TwitchAPI.helix;
-import static net.twasi.twitchapi.TwitchAPI.tmi;
-import static net.twasi.twitchapi.TwitchAPI.kraken;
+import static net.twasi.twitchapi.TwitchAPI.*;
 import static net.twasiplugin.dependency.streamtracker.StreamTrackerPlugin.service;
 
 public class StreamTracker extends Thread {
@@ -67,7 +65,7 @@ public class StreamTracker extends Thread {
         while (continueTracking) {
             try {
                 new Thread(this::track).start(); // Track in another thread to not get out of sync
-                TimeUnit.MINUTES.sleep(1);
+                TimeUnit.MINUTES.sleep(StreamTrackerPlugin.CONFIG.TrackMinutes);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -16,13 +16,16 @@ import java.util.stream.Collectors;
 
 import static net.twasi.twitchapi.TwitchAPI.helix;
 
-public class StreamTrackerPlugin extends TwasiPlugin {
+public class StreamTrackerPlugin extends TwasiPlugin<StreamTrackerConfiguration> {
 
     static HashMap<String, StreamTracker> registeredTrackers;
     static StreamTrackerService service = new StreamTrackerService();
 
+    public static StreamTrackerConfiguration CONFIG;
+
     @Override
     public void onActivate() {
+        CONFIG = getConfiguration();
         ServiceRegistry.register(service);
         registeredTrackers = new HashMap<>();
     }
