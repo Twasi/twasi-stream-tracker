@@ -33,8 +33,8 @@ public class StreamDTO {
         return entity.getLanguage();
     }
 
-    public String getStartedAt() {
-        return entity.getStartedAt().toString();
+    public long getStartedAt() {
+        return entity.getStartedAt().getTime();
     }
 
     public String getStreamType() {

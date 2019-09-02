@@ -31,8 +31,8 @@ public class StreamTrackDTO {
         return entity.getViewerCount();
     }
 
-    public String getTimestamp() {
-        return entity.getTimestamp().toString();
+    public long getTimestamp() {
+        return entity.getTimestamp().getTime();
     }
 
     public String getGame() {

@@ -34,7 +34,7 @@ api: |
   type Stream {
     streamId: String,
     language: String,
-    startedAt: String,
+    startedAt: Long,
     streamType: String,
     startFollowers: Int,
     startViews: Int,
@@ -55,7 +55,7 @@ api: |
     viewerCount: Int,
     chatMessages: Int,
     chatCommands: Int,
-    timestamp: String
+    timestamp: Long
   }
 
   type StreamTrackChatter {
