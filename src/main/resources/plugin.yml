@@ -14,34 +14,35 @@ api: |
     lastStreamWithOffset(offset: Int): Stream,
     streamById(streamId: String): Stream,
     allStreamData: [StreamTrackEntity],
-    globalStats: AccountStats
+    globalStats: AccountStats,
+    liveBotUsers: [LiveBotUser]!
   }
 
   type AccountStats {
-    totalTrackedViewers: Int,
-    totalTrackedMessages: Int,
-    totalTrackedStreams: Int,
+    totalTrackedViewers: Int!,
+    totalTrackedMessages: Int!,
+    totalTrackedStreams: Int!,
     viewTime(limit: Int): [ViewTime],
-    messagesOfUser(twitchId: String): Int
+    messagesOfUser(twitchId: String): Int!
   }
 
   type ViewTime {
-    twitchId: String,
-    displayName: String,
-    minutes: Int
+    twitchId: String!,
+    displayName: String!,
+    minutes: Int!
   }
 
   type Stream {
-    streamId: String,
-    language: String,
-    startedAt: Long,
-    streamType: String,
-    startFollowers: Int,
-    startViews: Int,
-    endFollowers: Int,
-    endViews: Int,
-    newFollowers: Int,
-    newViews: Int,
+    streamId: String!,
+    language: String!,
+    startedAt: Long!,
+    streamType: String!,
+    startFollowers: Int!,
+    startViews: Int!,
+    endFollowers: Int!,
+    endViews: Int!,
+    newFollowers: Int!,
+    newViews: Int!,
     communityIds: [String],
     tagIds: [String],
     data: [StreamTrackEntity],
@@ -49,18 +50,28 @@ api: |
   }
 
   type StreamTrackEntity {
-    gameId: String,
-    game: String,
-    title: String,
-    viewerCount: Int,
-    chatMessages: Int,
-    chatCommands: Int,
-    timestamp: Long
+    gameId: String!,
+    game: String!,
+    title: String!,
+    viewerCount: Int!,
+    chatMessages: Int!,
+    chatCommands: Int!,
+    timestamp: Long!
   }
 
   type StreamTrackChatter {
-    twitchId: String,
-    displayName: String,
-    messages: Int,
-    commands: Int
+    twitchId: String!,
+    displayName: String!,
+    messages: Int!,
+    commands: Int!
+  }
+
+  type LiveBotUser {
+    twitchId: String!,
+    userName: String!,
+    displayName: String!,
+    viewerCount: Int!,
+    followerCount: Int!,
+    currentGameId: String!,
+    currentTitle: String!
   }

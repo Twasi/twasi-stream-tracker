@@ -75,4 +75,8 @@ public class StreamTrackerDTO {
         return new AccountStatsDTO(user);
     }
 
+    public List<LiveBotUserDTO> getLiveBotUsers() {
+        return LiveBotUserDTO.getAll();
+    }
+
 }

@@ -40,4 +40,8 @@ public class StreamTrackerUserPlugin extends TwasiUserPlugin {
     public void onMessage(TwasiMessageEvent e) {
         tracker.addMessage(e.getMessage().getSender());
     }
+
+    public StreamTracker getTracker() {
+        return this.tracker;
+    }
 }
