@@ -67,11 +67,29 @@ api: |
   }
 
   type LiveBotUser {
-    twitchId: String!,
-    userName: String!,
-    displayName: String!,
-    viewerCount: Int!,
-    followerCount: Int!,
-    currentGameId: String!,
-    currentTitle: String!
+    channelData: TwitchChannel,
+    viewerCount: Int!
+  }
+
+  type TwitchChannel {
+    BroadcasterLanguage: String,
+    BroadcasterSoftware: String,
+    BroadcasterType: String,
+    Description: String,
+    DisplayName: String,
+    Followers: Int,
+    Game: String,
+    Id: Int,
+    Language: String,
+    Logo: String,
+    Mature: Boolean,
+    Name: String,
+    Partner: Boolean,
+    ProfileBanner: String,
+    ProfileBannerBackground: String,
+    ProfileBannerBackgroundColor: String,
+    Status: String,
+    Url: String,
+    VideoBanner: String,
+    Views: Int
   }

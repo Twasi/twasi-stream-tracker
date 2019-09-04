@@ -1,7 +1,7 @@
 package net.twasiplugin.dependency.streamtracker.api.models;
 
-import net.twasi.core.database.models.TwitchAccount;
 import net.twasi.core.services.providers.InstanceManagerService;
+import net.twasi.twitchapi.kraken.channels.response.ChannelDTO;
 import net.twasiplugin.dependency.streamtracker.StreamTracker;
 import net.twasiplugin.dependency.streamtracker.StreamTrackerUserPlugin;
 
@@ -21,64 +21,30 @@ public class LiveBotUserDTO {
                                 .filter(pl -> pl.getTracker().isOnline())
                                 .forEach(plugins::add)
                 );
-        return plugins.stream().map(pl -> {
-            TwitchAccount acc = pl.getTwasiInterface().getStreamer().getUser().getTwitchAccount();
-            StreamTracker tracker = pl.getTracker();
-            return new LiveBotUserDTO(
-                    acc.getTwitchId(),
-                    acc.getUserName(),
-                    acc.getDisplayName(),
-                    tracker.getLastViewerCount(),
-                    tracker.getLastFollowerCount(),
-                    tracker.getLastGameId(),
-                    tracker.getLastTitle()
-            );
-        }).collect(Collectors.toList());
+        return plugins.stream()
+                .filter(pl -> pl.getTracker().getChannelData() != null)
+                .map(pl -> {
+                    StreamTracker tracker = pl.getTracker();
+                    return new LiveBotUserDTO(
+                            tracker.getChannelData(),
+                            tracker.getLastViewerCount()
+                    );
+                }).collect(Collectors.toList());
     }
 
-    private String twitchId;
-    private String userName;
-    private String displayName;
+    private ChannelDTO channelData;
     private int viewerCount;
-    private int followerCount;
-    private String currentGameId;
-    private String currentTitle;
 
-    public LiveBotUserDTO(String twitchId, String userName, String displayName, int viewerCount, int followerCount, String currentGameId, String currentTitle) {
-        this.twitchId = twitchId;
-        this.userName = userName;
-        this.displayName = displayName;
+    public LiveBotUserDTO(ChannelDTO channelData, int viewerCount) {
+        this.channelData = channelData;
         this.viewerCount = viewerCount;
-        this.followerCount = followerCount;
-        this.currentGameId = currentGameId;
-        this.currentTitle = currentTitle;
     }
 
-    public String getTwitchId() {
-        return twitchId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public String getDisplayName() {
-        return displayName;
+    public ChannelDTO getChannelData() {
+        return channelData;
     }
 
     public int getViewerCount() {
         return viewerCount;
-    }
-
-    public int getFollowerCount() {
-        return followerCount;
-    }
-
-    public String getCurrentGameId() {
-        return currentGameId;
-    }
-
-    public String getCurrentTitle() {
-        return currentTitle;
     }
 }

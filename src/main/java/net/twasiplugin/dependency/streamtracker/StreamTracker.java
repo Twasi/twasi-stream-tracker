@@ -41,7 +41,7 @@ public class StreamTracker extends Thread {
     String lastTitle = null;
     String lastGameId = null;
     int lastViewerCount = 0;
-    int lastFollowerCount = 0;
+    ChannelDTO tempUserData = null;
 
     // State watcher
     private boolean online = false;
@@ -112,15 +112,15 @@ public class StreamTracker extends Thread {
             stream = new StreamEntity(user.getId(), dto.getId(), dto.getLanguage(), dto.getStartedAt(), dto.getType(), dto.getCommunityIds(), dto.getTagIds(), channelDTO.getFollowers(), currentUser.getViewCount());
             streamRepo.add(stream);
         } else {
-            this.lastFollowerCount = channelDTO.getFollowers();
-            stream.setFollowers(lastFollowerCount);
-            this.lastViewerCount = currentUser.getViewCount();
-            stream.setViews(lastViewerCount);
+            this.tempUserData = channelDTO;
+            stream.setFollowers(channelDTO.getFollowers());
+            stream.setViews(currentUser.getViewCount());
         }
         streamRepo.commit(stream);
         streamRepo.commitAll();
         this.lastTitle = dto.getTitle();
         this.lastGameId = dto.getGameId();
+        this.lastViewerCount = dto.getViewerCount();
         StreamTrackEntity entity = new StreamTrackEntity(stream.getId(), dto.getGameId(), dto.getTitle(), dto.getViewerCount(), userMessages);
         streamTrackRepo.add(entity);
         streamTrackRepo.commitAll();
@@ -203,7 +203,7 @@ public class StreamTracker extends Thread {
         return lastViewerCount;
     }
 
-    public int getLastFollowerCount() {
-        return lastFollowerCount;
+    public ChannelDTO getChannelData() {
+        return tempUserData;
     }
 }
