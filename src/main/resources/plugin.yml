@@ -15,6 +15,7 @@ api: |
     streamById(streamId: String): Stream,
     allStreamData: [StreamTrackEntity],
     globalStats: AccountStats,
+    getAllStreams: [Stream],
     liveBotUsers: [LiveBotUser]!
   }
 

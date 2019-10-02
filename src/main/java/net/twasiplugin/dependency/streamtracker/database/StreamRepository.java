@@ -3,6 +3,7 @@ package net.twasiplugin.dependency.streamtracker.database;
 import net.twasi.core.database.lib.Repository;
 import net.twasi.core.database.models.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class StreamRepository extends Repository<StreamEntity> {
@@ -25,6 +26,15 @@ public class StreamRepository extends Repository<StreamEntity> {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public List<StreamEntity> getAllStreamsByUser(User user) {
+        List<StreamEntity> streams = store.createQuery(StreamEntity.class)
+                .field("user").equal(user.getId()).asList();
+        if (streams.size() == 0) {
+            return new ArrayList<>();
+        }
+        return streams;
     }
 
     public List<StreamEntity> getAllByUser(User user) {

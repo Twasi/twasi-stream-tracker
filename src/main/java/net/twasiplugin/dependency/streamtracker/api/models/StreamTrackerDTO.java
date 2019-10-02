@@ -36,6 +36,17 @@ public class StreamTrackerDTO {
         }
     }
 
+    public List<StreamDTO> getAllStreams() {
+        try {
+            return repo.getAllStreamsByUser(user)
+                    .stream()
+                    .map(StreamDTO::new)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public List<StreamDTO> getStreamsByRange(String start, String end) {
         return null;
     }

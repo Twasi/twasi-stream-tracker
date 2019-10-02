@@ -13,6 +13,7 @@ import net.twasiplugin.dependency.streamtracker.database.StreamTrackRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static net.twasiplugin.dependency.streamtracker.StreamTrackerPlugin.getGameIdsAndNames;
 
