@@ -30,7 +30,7 @@ public class StreamRepository extends Repository<StreamEntity> {
 
     public List<StreamEntity> getAllStreamsByUser(User user) {
         List<StreamEntity> streams = store.createQuery(StreamEntity.class)
-                .field("user").equal(user.getId()).asList();
+                .field("user").equal(user.getId()).order("-startedAt").asList();
         if (streams.size() == 0) {
             return new ArrayList<>();
         }
